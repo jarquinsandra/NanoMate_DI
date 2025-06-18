@@ -1,0 +1,13 @@
+pandas
+numpy
+matplotlib
+seaborn
+scikit-learn
+umap-learn
+pymzml
+joblib
+tqdm
+numba
+statsmodels
+scipy
+pycombat @ git+https://github.com/brentp/pyComBat.git

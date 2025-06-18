@@ -1,0 +1,37 @@
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Virtual environments
+venv/
+.env/
+*.env
+
+# Logs and cache
+*.log
+*.tmp
+*.pkl
+*.joblib
+.cache/
+peak_cache/
+step1_results/
+qc_evaluation_results/
+corrected_peaks/
+
+# Output files
+*.png
+*.pdf
+*.csv
+*.json
+
+# IDE settings
+.vscode/
+.idea/
