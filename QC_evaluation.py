@@ -216,19 +216,34 @@ if args.export_cleaned_data:
 log("📏 Computing RSDs for QC samples...")
 qc_filtered = metadata_clean[metadata_clean[args.sample_type_column] == args.qc_label]
 df_qc = df_clean.loc[qc_filtered.index]
+
 if len(df_qc) >= 2:
-    rsd_values = np.std(df_qc.values, axis=0) / (np.mean(df_qc.values, axis=0) + EPSILON) * 100
+    mean_vals = np.mean(df_qc.values, axis=0)
+    std_vals = np.std(df_qc.values, axis=0)
+    rsd_values = std_vals / (np.abs(mean_vals) + EPSILON) * 100
+
     rsd_series = pd.Series(rsd_values, index=df_qc.columns, name="RSD_%")
-    rsd_series.reset_index().rename(columns={"index": "m/z"}).to_csv(
-        os.path.join(args.outdir, f"{basename}_QC_feature_RSDs.csv"), index=False)
+    rsd_df = rsd_series.reset_index().rename(columns={"index": "m/z"})
+
+    rsd_path_csv = os.path.join(args.outdir, f"{basename}_QC_feature_RSDs.csv")
+    rsd_path_fig = os.path.join(args.outdir, f"{basename}_QC_RSD_distribution.{args.plot_format}")
+
+    rsd_df.to_csv(rsd_path_csv, index=False)
+
     plt.figure(figsize=(6, 4))
-    sns.histplot(rsd_series, bins=50, kde=False)
+    sns.histplot(rsd_series.clip(lower=0), bins=50, kde=False)
     plt.title("RSD Distribution (QC Samples)")
     plt.xlabel("RSD (%)")
     plt.ylabel("Number of Features")
     plt.tight_layout()
-    plt.savefig(os.path.join(args.outdir, f"{basename}_QC_RSD_distribution.{args.plot_format}"))
+    plt.savefig(rsd_path_fig)
     plt.close()
+
+    log(f"📈 RSD plot saved to: {rsd_path_fig}")
+    log(f"📄 RSD table saved to: {rsd_path_csv}")
+else:
+    log("⚠️ Not enough QC samples to compute RSD.")
+
 
 # Summary report
 summary_path = os.path.join(args.outdir, f"{basename}_qc_summary.txt")
