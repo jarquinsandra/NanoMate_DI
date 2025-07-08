@@ -117,8 +117,14 @@ def main(pos_path, neg_path, output_path, metadata_path=None, group_column=None,
         combined_no_qcqa = combined_centered.loc[meta_no_qcqa.index]
         labels_no_qcqa = meta_no_qcqa[group_column]
 
+        if args.save_no_qcqa:
+            no_qcqa_csv = output_path.replace(".csv", "_noQCQA.csv")
+            combined_no_qcqa.to_csv(no_qcqa_csv)
+            print(f"💾 Matrix without QC/QA saved to: {no_qcqa_csv}")
+
         combined_scaled_no_qcqa = zscaler.fit_transform(combined_no_qcqa)
         suffix_nq = f"groupby-{labels_no_qcqa.name}-noQCQA"
+
 
         pca_emb = pca.fit_transform(combined_scaled_no_qcqa)
         explained = pca.explained_variance_ratio_ * 100
@@ -143,6 +149,7 @@ if __name__ == "__main__":
     parser.add_argument("--umap_n_neighbors", type=int, default=15)
     parser.add_argument("--umap_min_dist", type=float, default=0.1)
     parser.add_argument("--tsne_perplexity", type=float, default=30)
+    parser.add_argument("--save_no_qcqa", action="store_true", help="Also export matrix without QC/QA samples")
     parser.add_argument("--only_plots", action="store_true", help="Use existing matrix to generate plots only")
     args = parser.parse_args()
 
